@@ -1,1 +1,1 @@
-# watercolors-shop
+# Watercolors-shop
