@@ -1,0 +1,32 @@
+version: '3.4'
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  
+  watercolors-catalogue:
+    build:
+      context: .
+      dockerfile: ./catalogue/dockerfile
+    container_name: watercolors-catalogue
+    environment:
+      DB_SERVER: watercolors-database
+    ports:
+      - 8080:8080
+    depends_on:
+      - watercolors-database
+
+  watercolors-database:
+    image: postgres
+    container_name: watercolors-database
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/database:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_DB: catalogue
+      POSTGRES_USER: dbadmin
+      POSTGRES_PASSWORD: watercolors
