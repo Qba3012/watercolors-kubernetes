@@ -7,9 +7,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import ogorkiewicz.jakub.catalogue.dto.PageDto;
 import ogorkiewicz.jakub.catalogue.service.PaintingService;
 
+@Api(tags = {"paintings"})
 @RestController
 @RequestMapping("/paintings")
 public class PaintingController {
@@ -21,8 +25,10 @@ public class PaintingController {
         this.paintingService = paintingService;
     }
     
+    @ApiOperation(value = "Return page of 50 paintings")
     @GetMapping("/{page}")
-    public ResponseEntity<PageDto> getHello(@PathVariable("page") int page) {
+    public ResponseEntity<PageDto> getPage(@ApiParam(value = "Page number") @PathVariable("page") int page) {
         return ResponseEntity.ok().body(paintingService.getPage(page));
     }
+    
 }
