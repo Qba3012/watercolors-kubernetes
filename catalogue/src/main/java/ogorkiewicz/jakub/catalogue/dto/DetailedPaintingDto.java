@@ -5,12 +5,14 @@ import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ogorkiewicz.jakub.catalogue.model.ImageUrl;
 import ogorkiewicz.jakub.catalogue.model.Painting;
 
 @Getter
+@Setter
 @NoArgsConstructor
-public class PaintingDto {
+public class DetailedPaintingDto {
     private Long id;
     private String title;
     private String description;
@@ -23,7 +25,7 @@ public class PaintingDto {
     private List<String> images;
     private String createDateTime;
 
-    public PaintingDto(Painting entity) {
+    public DetailedPaintingDto(Painting entity) {
         this.id = entity.getId();
         this.title = entity.getTitle();
         this.description = entity.getDescription();

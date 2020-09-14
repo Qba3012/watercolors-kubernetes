@@ -13,12 +13,12 @@ public class PageDto {
     
     private int page;
     private int totalPages;
-    private List<PaintingDto> paintings;
+    private List<SimplePaintingDto> paintings;
 
     public PageDto (int page, int totalPages, List<Painting> paintings) {
         this.page = page;
         this.totalPages = totalPages;
-        this.paintings = paintings.stream().map(PaintingDto::new).collect(Collectors.toList());
+        this.paintings = paintings.stream().map(SimplePaintingDto::new).collect(Collectors.toList());
     }
 
 }
