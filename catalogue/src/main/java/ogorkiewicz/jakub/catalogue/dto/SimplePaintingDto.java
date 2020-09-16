@@ -1,5 +1,7 @@
 package ogorkiewicz.jakub.catalogue.dto;
 
+import java.time.format.DateTimeFormatter;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ogorkiewicz.jakub.catalogue.model.Painting;
@@ -24,6 +26,6 @@ public class SimplePaintingDto {
         this.category = entity.getCategory();
         this.mainImage = entity.getMainImage();
         this.price = entity.getPrice();
-        this.createDateTime = entity.getCreateDateTime().toString();
+        this.createDateTime = entity.getCreateDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
     }
 }

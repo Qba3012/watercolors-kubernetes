@@ -11,6 +11,7 @@ import ogorkiewicz.jakub.catalogue.dto.DetailedPaintingDto;
 import ogorkiewicz.jakub.catalogue.dto.PageDto;
 import ogorkiewicz.jakub.catalogue.exception.BadRequestException;
 import ogorkiewicz.jakub.catalogue.exception.ErrorCode;
+import ogorkiewicz.jakub.catalogue.model.Availability;
 import ogorkiewicz.jakub.catalogue.model.Painting;
 import ogorkiewicz.jakub.catalogue.repository.PaintingRepository;
 
@@ -33,12 +34,17 @@ public class PaintingService {
         return new DetailedPaintingDto(getPainting(id));
     }
 
-    // public DetailedPaintingDto updatePainting(DetailedPaintingDto detailedPaintingDto) {
-    //     Painting painting = getPainting(detailedPaintingDto.getId());
-    //     painting.setTitle(detailedPaintingDto.getTitle());
-    //     painting.setDescription(detailedPaintingDto.getDescription());
-    //     painting.setAvailability(detailedPaintingDto.getAvailability());
-    // }
+    public DetailedPaintingDto updatePainting(DetailedPaintingDto detailedPaintingDto) {
+        Painting painting = getPainting(detailedPaintingDto.getId());
+        painting.setTitle(detailedPaintingDto.getTitle());
+        painting.setDescription(detailedPaintingDto.getDescription());
+        painting.setAvailability(Availability.valueOf(detailedPaintingDto.getAvailability()));
+        painting.setCategory(detailedPaintingDto.getCategory());
+        painting.setHeight(detailedPaintingDto.getHeight());
+        painting.setWidth(detailedPaintingDto.getWidth());
+        painting.setPrice(detailedPaintingDto.getPrice());
+        return new DetailedPaintingDto(painting);
+    }
 
 	public void deletePaintingById(Long id) {
         paintingRepository.deleteById(id);
@@ -52,5 +58,11 @@ public class PaintingService {
             throw new BadRequestException(ErrorCode.NOT_FOUND, Painting.class);
         }
     }
+
+	public DetailedPaintingDto savePainting(DetailedPaintingDto paintingDto) {
+        Painting painting = paintingDto.toEntity();
+        paintingRepository.save(painting);
+		return new DetailedPaintingDto(painting);
+	}
 
 }

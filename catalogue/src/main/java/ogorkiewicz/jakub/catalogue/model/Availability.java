@@ -4,4 +4,5 @@ public enum Availability {
     
     TO_ORDER,
     AVAILABLE;
+
 }
