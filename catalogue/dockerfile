@@ -1,0 +1,7 @@
+FROM adoptopenjdk/maven-openjdk11 
+COPY ./catalogue /usr/src/app/catalogue
+RUN mvn -f /usr/src/app/catalogue/pom.xml clean package
+
+EXPOSE 8080
+
+ENTRYPOINT  java -jar /usr/src/app/catalogue/target/*.jar
