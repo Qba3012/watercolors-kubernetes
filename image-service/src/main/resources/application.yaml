@@ -1,0 +1,22 @@
+spring:
+    application:
+        name: watercolors-images
+
+# Datasource config
+    jpa:
+        hibernate:
+            ddl-auto: create-drop
+    datasource:
+        url: jdbc:postgresql://${DB_SERVER:watercolors-postgres}/${POSTGRES_DB:watercolors}
+        username: ${POSTGRES_USER:dbadmin}
+        password: ${POSTGRES_PASSWORD:watercolors}
+        initialization-mode: always
+    servlet:
+        multipart:
+            maxFileSize: 1000MB
+            maxRequestSize: 1000MB
+
+# File resource config
+images:
+    homePath: ${user.home}/watercolors
+    server: ${SERVER:http://localhost:8080}
