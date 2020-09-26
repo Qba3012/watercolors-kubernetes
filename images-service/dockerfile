@@ -1,7 +1,0 @@
-FROM adoptopenjdk/maven-openjdk11 
-COPY ./image-service /usr/src/app/image-service
-RUN mvn -f /usr/src/app/image-service/pom.xml clean package
-
-EXPOSE 8070
-
-ENTRYPOINT  java -jar /usr/src/app/image-service/target/*.jar
