@@ -1,14 +1,14 @@
 package ogorkiewicz.jakub.catalogue.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import ogorkiewicz.jakub.catalogue.dto.ImageDto;
 
-@FeignClient("watercolors-images")
+@FeignClient(name = "watercolors-images", path = "/api/v1/images")
 public interface ImageClient {
     
-    @GetMapping("/images/{id}")
-    ImageDto getImagesData(@PathVariable("id") Long id);
+    @DeleteMapping("/paintings/{id}/all")
+    ResponseEntity<?> deletePaintingsImages(@PathVariable("id") Long id);
 }

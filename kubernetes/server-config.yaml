@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server-config
+  labels:
+    app: watercolors-images
+data:
+  SERVER: https://api.test.pl

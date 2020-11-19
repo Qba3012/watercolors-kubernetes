@@ -8,8 +8,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,11 +26,15 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import ogorkiewicz.jakub.catalogue.client.ImageClient;
 import ogorkiewicz.jakub.catalogue.dto.DetailedPaintingDto;
+import ogorkiewicz.jakub.catalogue.dto.ImageDto;
 import ogorkiewicz.jakub.catalogue.dto.PageDto;
 import ogorkiewicz.jakub.catalogue.dto.SimplePaintingDto;
 import ogorkiewicz.jakub.catalogue.exception.ErrorCode;
 import ogorkiewicz.jakub.catalogue.exception.ErrorResponse;
+import ogorkiewicz.jakub.catalogue.model.Availability;
+import ogorkiewicz.jakub.catalogue.model.ImageUrl;
 import ogorkiewicz.jakub.catalogue.model.Painting;
+import ogorkiewicz.jakub.catalogue.repository.PaintingRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -37,8 +46,36 @@ class PaintingResourceTests {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@Autowired
+	private PaintingRepository paintingRepository;
+	
 	@MockBean
 	private ImageClient imageClient;
+
+	private Long paintingId;
+
+	@BeforeEach
+	public void setUpTestData() {
+		Painting painting = new Painting();
+		painting.setTitle("TEST TITLE");
+		painting.setPrice(25.6);
+		painting.setAvailability(Availability.AVAILABLE);
+		painting.setCategory("birds");
+		painting.setHeight(300);
+		painting.setWidth(200);
+		painting.setDescription("TEST DESCRIPTION");
+		List<ImageUrl> imageUrls = List.of(new ImageUrl("http://localhost:8080/images/1","http://localhost:8080/images/1-small"), 
+											new ImageUrl("http://localhost:8080/images/2","http://localhost:8080/images/2-small"),
+											new ImageUrl("http://localhost:8080/images/3","http://localhost:8080/images/3-small"));
+		painting.setImages(imageUrls);							
+		paintingRepository.save(painting);
+		paintingId = painting.getId();
+	}
+
+	@AfterEach
+	public void cleanUp() {
+		paintingRepository.deleteAll();
+	}
 
 	@Test
 	public void shouldGetPage() throws Exception {
@@ -64,20 +101,19 @@ class PaintingResourceTests {
 	@Test
 	public void shouldGetPaintingById() throws Exception{
 		// given // when
-		MvcResult mvcResult = mockMvc.perform(get(PAINTING_PATH + "/{id}", 1))
+		MvcResult mvcResult = mockMvc.perform(get(PAINTING_PATH + "/{id}", paintingId))
 			.andExpect(status().isOk())
 			.andReturn();
 
 		// then
 		DetailedPaintingDto testDetailedPaintingDto = new DetailedPaintingDto();
-		testDetailedPaintingDto.setId(1L);
+		testDetailedPaintingDto.setId(paintingId);
 		testDetailedPaintingDto.setTitle("TEST TITLE");
-		testDetailedPaintingDto.setDescription("TEST DESCIRPTION");
+		testDetailedPaintingDto.setDescription("TEST DESCRIPTION");
 		testDetailedPaintingDto.setAvailability("AVAILABLE");
 		testDetailedPaintingDto.setCategory("birds");
 		testDetailedPaintingDto.setWidth(200);
 		testDetailedPaintingDto.setHeight(300);
-		testDetailedPaintingDto.setMainImage("http://localhost:8080/images/1");
 		testDetailedPaintingDto.setPrice(25.6);
 
 		DetailedPaintingDto detailedPaintingDto = 
@@ -95,7 +131,7 @@ class PaintingResourceTests {
 	@Test
 	public void shouldNotGetNotExistingPainting() throws Exception {
 		// given // when
-		MvcResult mvcResult = mockMvc.perform(get(PAINTING_PATH + "/{id}", 2))
+		MvcResult mvcResult = mockMvc.perform(get(PAINTING_PATH + "/{id}", paintingId + 1))
 			.andExpect(status().isBadRequest())
 			.andReturn();
 
@@ -192,6 +228,62 @@ class PaintingResourceTests {
 		MvcResult mvcResult = mockMvc.perform(put(PAINTING_PATH)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(paintingDto)))
+			.andExpect(status().isBadRequest())
+			.andReturn();
+		
+		// then
+		ErrorResponse errorResponse = 
+			objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
+		
+		then(errorResponse)
+			.extracting(ErrorResponse::getErrorCode,
+						ErrorResponse::getMessage)
+			.containsOnly(Painting.class.getSimpleName() + '.' + ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND.getDescription());
+	}
+
+	@Test
+	public void shouldUpdatePaintingImages() throws Exception{
+		// given 
+		final String testLink1 = "http://testlink1.pl";
+		final String testLink2 = "http://testlink2.pl";
+		final String testLink3 = "http://testlink3.pl";
+		final String testLink4 = "http://testlink4.pl";
+		final List<ImageUrl> testLinks = List.of(new ImageUrl(testLink1, testLink2),
+												new ImageUrl(testLink3, testLink4));
+
+		List<ImageDto> imageDtos = testLinks.stream().map(ImageDto::new).collect(Collectors.toList());
+
+		// when
+		mockMvc.perform(put(PAINTING_PATH + "/{id}", paintingId)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(imageDtos)))
+			.andExpect(status().isOk());
+		
+		// then
+		Painting updatedPainting = paintingRepository.findById(paintingId).get();
+
+		then(updatedPainting)
+			.extracting(p -> p.getImages())
+			.usingRecursiveComparison()
+			.ignoringExpectedNullFields()
+			.isEqualTo(testLinks);
+	}
+
+	@Test
+	public void shouldNotUpdateImagesOfNotExistingPainting() throws Exception{
+		// given 
+		final String testLink1 = "http://testlink1.pl";
+		final String testLink2 = "http://testlink2.pl";
+		final String testLink3 = "http://testlink3.pl";
+		final String testLink4 = "http://testlink4.pl";
+		final List<ImageUrl> testLinks = List.of(new ImageUrl(testLink1, testLink2),
+												new ImageUrl(testLink3, testLink4));
+
+		List<ImageDto> imageDtos = testLinks.stream().map(ImageDto::new).collect(Collectors.toList());
+		// when
+		MvcResult mvcResult = mockMvc.perform(put(PAINTING_PATH + "/{id}", paintingId + 1)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(imageDtos)))
 			.andExpect(status().isBadRequest())
 			.andReturn();
 		

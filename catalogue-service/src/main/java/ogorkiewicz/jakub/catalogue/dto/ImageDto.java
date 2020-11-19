@@ -1,19 +1,24 @@
 package ogorkiewicz.jakub.catalogue.dto;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ogorkiewicz.jakub.catalogue.model.ImageUrl;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ImageDto {
 
-    private List<String> imageUrls;
+    private String original;
+    private String small;
     
-    public List<ImageUrl> toEntity() {
-        return this.imageUrls.stream().map(i -> new ImageUrl(i)).collect(Collectors.toList());
+    public ImageUrl toEntity() {
+        return new ImageUrl(this.original, this.small);
+    }
+
+    public ImageDto(ImageUrl imageUrl) {
+        this.original = imageUrl.getUrl();
+        this.small = imageUrl.getSmallUrl();
     }
 }

@@ -1,0 +1,59 @@
+server:
+    port: 8090
+    
+spring:
+# General
+    application:
+        name: watercolors-mail
+
+# SMTP client
+    mail:
+        host: smtp.test.pl
+        port: 465
+        username: test-pl
+        password: test!
+        properties:
+            "mail.smtp.ssl.enable": true
+
+# MVC
+    mvc:
+        servlet:
+             path: /api/v1/mail
+
+# Datasource config
+    jpa:
+        properties:
+            hibernate:
+                default_schema: mail
+    datasource:
+        url: jdbc:postgresql://${DB_SERVER:watercolors-postgres}/${POSTGRES_DB:watercolors}
+        username: ${POSTGRES_USER:dbadmin}
+        password: ${POSTGRES_PASSWORD:watercolors}
+    liquibase:
+        default-schema: mail
+
+# Kubernetes config
+    cloud:
+        kubernetes:
+            discovery:
+                all-namespaces: true
+            
+# Monitoring
+management:
+    endpoint:
+        health:
+            show-details: always
+    endpoints:
+        web:
+            exposure:
+                include: "*"
+
+# Custom
+newsletter:
+    welcome:
+        subject: ${NEWSLETTER_WELCOME_SUBJECT:Witaj w newsletterze}
+        template: ${WELCOME_TEMPLATE:welcome}
+    email: newsletter@test.pl
+    host: test@gmail.com
+    home: ${user.home}/watercolors/test
+    server: ${SERVER:http://localhost:8090}

@@ -1,0 +1,30 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: watercolors-pv-volume
+  labels:
+    type: local
+    app: watercolors-images
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/watercolors"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: watercolors-pv-claim
+  labels:
+    app: watercolors-images
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce 
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 5Gi

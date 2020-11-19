@@ -1,9 +1,21 @@
-# Datasource test config
 spring:
-    jpa:
-        hibernate:
-            ddl-auto: update
+
+# MVC
+    mvc:
+        servlet:
+             path: /images
+
+# Datasource test config
     datasource:
         url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
         username: sa
         password: sa
+    servlet:
+        multipart:
+            maxFileSize: 1000MB
+            maxRequestSize: 1000MB
+# File resource config
+images:
+    homePath: ${user.home}/watercolors/test
+    server: ${SERVER:http://localhost:8080}
+    resizeWidth: 500
