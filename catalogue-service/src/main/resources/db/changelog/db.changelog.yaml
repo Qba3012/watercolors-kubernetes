@@ -1,0 +1,45 @@
+databaseChangeLog:
+- changeSet:
+    id: 1605611797469-1
+    author: Jakub (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: Painting_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: tags_id
+            type: BIGINT
+        tableName: painting_tag
+- changeSet:
+    id: 1605611797469-2
+    author: Jakub (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: tags_id
+        baseTableName: painting_tag
+        constraintName: FKh1gsd86lsvp3fix4rm3u24dkw
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: tag
+        validate: true
+- changeSet:
+    id: 1605611797469-3
+    author: Jakub (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: Painting_id
+        baseTableName: painting_tag
+        constraintName: FKmw5kmk5ecgjwectkr56jjwp1d
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: painting
+        validate: true
+

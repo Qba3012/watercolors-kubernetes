@@ -11,11 +11,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.jbosslog.JBossLog;
+import net.coobird.thumbnailator.Thumbnails;
 
 @Service
 @JBossLog
@@ -23,6 +25,27 @@ public class FileService {
 
     @Value("${images.homePath}")
     private String path;
+
+    @Value("${images.resizeWidth}")
+    private int resizeWidth;
+
+    public Path resizeFile(Path imagePath, Long paintingId) {
+        String fileName = FilenameUtils.getBaseName(imagePath.toString());
+        String extension = FilenameUtils.getExtension(imagePath.toString());
+        Path filePath = Paths.get(path, "painting" + paintingId, fileName + "-small." + extension);
+
+        try {
+            Files.createDirectories(filePath.getParent());
+            Thumbnails.of(imagePath.toFile())
+                    .width(resizeWidth)
+                    .outputFormat(extension.toUpperCase())
+                    .toFile(filePath.toFile());
+        } catch (IOException e) {
+            log.error("Error while resizing image" + e.getMessage());
+        }
+
+        return filePath;
+    }
 
     public Path saveFile(MultipartFile multipartFile, Long paintingId) {
         Path filePath = Paths.get(path, "painting" + paintingId, multipartFile.getOriginalFilename());
@@ -58,9 +81,7 @@ public class FileService {
     public InputStream readFile(URI localUri){
         Path filePath = Paths.get(localUri);
         try{
-            System.out.println(filePath.toString());
             InputStream is = Files.newInputStream(filePath);
-            System.out.println(is.available());
             return is;
         }catch (IOException e){
             log.error("Unable to read file. " + e.getMessage());
@@ -68,8 +89,8 @@ public class FileService {
         return null;
     }
 
-    public boolean deleteAllDeviceFiles(Long deviceId){
-        Path filePath = Paths.get(path + "/device" + deviceId);
+    public boolean deleteAllPaintingImages(Long paintingId){
+        Path filePath = Paths.get(path, "painting" + paintingId);
         return deleteFile(filePath);
     }
 }

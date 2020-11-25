@@ -10,7 +10,7 @@ public class ErrorResponse {
     String errorCode;
     String message;
     
-    public ErrorResponse(BadRequestException e) {
+    public ErrorResponse(AppException e) {
         this.errorCode = e.getType().getSimpleName() + "." + e.getErrorCode();
         this.message = e.getErrorCode().getDescription();
     }

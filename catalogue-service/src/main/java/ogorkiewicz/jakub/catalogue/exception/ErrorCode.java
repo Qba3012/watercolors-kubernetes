@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum ErrorCode {
     
     NOT_FOUND ("Requested entity not found"),
+    SERVICE_NOT_READY("Unexpected server problem. Try again later."),
     ID_NOT_NULL ("Id must be null");
 
     private String description;

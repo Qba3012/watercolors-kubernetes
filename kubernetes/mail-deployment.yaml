@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  watercolors-mail
+  labels:
+    name:  watercolors-mail
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watercolors-mail
+  template:
+    metadata:
+      labels:
+        app:  watercolors-mail
+    spec:
+      containers:
+      - image:  qba3012/my-projects:watercolors-mail-v1.0
+        name:  watercolors-mail
+        envFrom:
+        - configMapRef: 
+            name: server-config   
+        - configMapRef: 
+            name: postgres-config
+        - secretRef:
+            name: postgres-secret
+        ports:
+        - containerPort:  8090
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /api/v1/mail/actuator
+            port: 8090
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/mail/actuator
+            port: 8090
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      imagePullSecrets:
+      - name: regcred
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watercolors-mail
+  labels:
+    app: watercolors-mail
+spec:
+  type: NodePort
+  ports:
+  - port: 8090
+    protocol: TCP
+  selector:
+    app: watercolors-mail

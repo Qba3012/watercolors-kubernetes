@@ -1,16 +1,37 @@
-# Datasource config
 spring:
+# General
     application:
         name: watercolors-catalogue
+
+# MVC
+    mvc:
+        servlet:
+             path: /catalogue
+
+# Datasource config
     jpa:
-        hibernate:
-            ddl-auto: update
+        properties:
+            hibernate:
+                default_schema: catalogue
     datasource:
         url: jdbc:postgresql://${DB_SERVER:watercolors-postgres}/${POSTGRES_DB:watercolors}
         username: ${POSTGRES_USER:dbadmin}
         password: ${POSTGRES_PASSWORD:watercolors}
-        initialization-mode: always
+    liquibase:
+        default-schema: catalogue
+
+# Kubernetes config
     cloud:
         kubernetes:
             discovery:
                 all-namespaces: true
+            
+# Monitoring
+management:
+    endpoint:
+        health:
+            show-details: always
+    endpoints:
+        web:
+            exposure:
+                include: "*"

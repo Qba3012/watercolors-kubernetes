@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  watercolors-postgres
+  labels:
+    name:  watercolors-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watercolors-postgres
+  template:
+    metadata:
+      labels:
+        app:  watercolors-postgres
+    spec:
+      containers:
+      - image:  postgres
+        name:  watercolors-postgres
+        envFrom:
+        - configMapRef: 
+            name: postgres-config
+        - secretRef:
+            name: postgres-secret
+        ports:
+        - containerPort:  5432
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watercolors-postgres
+  labels:
+    app: watercolors-postgres
+spec:
+  ports:
+  - port: 5432
+    protocol: TCP
+  selector:
+    app: watercolors-postgres

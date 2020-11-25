@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  watercolors-catalogue
+  labels:
+    name:  watercolors-catalogue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: watercolors-catalogue
+  template:
+    metadata:
+      labels:
+        app:  watercolors-catalogue
+    spec:
+      containers:
+      - image:  qba3012/my-projects:watercolors-catalogue-v2.1
+        name:  watercolors-catalogue
+        envFrom:
+        - configMapRef: 
+            name: postgres-config
+        - secretRef:
+            name: postgres-secret
+        ports:
+        - containerPort:  8080
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /api/v1/catalogue/actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/catalogue/actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      imagePullSecrets:
+      - name: regcred
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watercolors-catalogue
+  labels:
+    app: watercolors-catalogue
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    app: watercolors-catalogue

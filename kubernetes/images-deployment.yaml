@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  watercolors-images
+  labels:
+    name:  watercolors-images
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watercolors-images
+  template:
+    metadata:
+      labels:
+        app:  watercolors-images
+    spec:
+      containers:
+      - image:  qba3012/my-projects:watercolors-images-v2.1
+        name:  watercolors-images
+        envFrom:
+        - configMapRef: 
+            name: postgres-config
+        - configMapRef: 
+            name: server-config            
+        - secretRef:
+            name: postgres-secret
+        ports:
+        - containerPort:  8070
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /api/v1/images/actuator/health
+            port: 8070
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/images/actuator/health
+            port: 8070
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - mountPath: /root
+          name: watercolors
+      volumes:
+        - name: watercolors
+          persistentVolumeClaim:
+            claimName: watercolors-pv-claim
+      imagePullSecrets:
+      - name: regcred
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watercolors-images
+  labels:
+    app: watercolors-images
+spec:
+  type: NodePort
+  ports:
+  - port: 8070
+    protocol: TCP
+  selector:
+    app: watercolors-images

@@ -14,5 +14,11 @@ public interface ImageRepository extends CrudRepository<Image, Long> {
 
     public Optional<Image> findByFileNameAndPaintingId(String fileName, Long paintingId);
 
+    public Optional<Image> findBySmallFileNameAndPaintingId(String fileName, Long paintingId);
+
     public List<Image> findByPaintingId(Long paintingId);
+
+    public void deleteByPaintingId(Long paintingId);
+
+
 }

@@ -3,18 +3,11 @@ package ogorkiewicz.jakub.catalogue.exception;
 import lombok.Getter;
 
 @Getter
-public class BadRequestException extends RuntimeException{
+public class BadRequestException extends AppException{
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
-    
-    private ErrorCode errorCode;
-    private Class<?> type;
 
-    public BadRequestException (ErrorCode errorCode, Class<?> type) {
-        this.errorCode = errorCode;
-        this.type = type;
+    public BadRequestException(ErrorCode errorCode, Class<?> type) {
+        super(errorCode, type);
     }
 }

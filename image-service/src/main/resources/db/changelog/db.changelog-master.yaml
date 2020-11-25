@@ -1,0 +1,40 @@
+databaseChangeLog:
+- changeSet:
+    id: 1603225226891-1
+    author: Jakub (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: imagePK
+            name: id
+            type: BIGINT
+        - column:
+            name: create_date_time
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: file_name
+            type: VARCHAR(255)
+        - column:
+            name: local_uri
+            type: BYTEA
+        - column:
+            name: painting_id
+            type: BIGINT
+        - column:
+            name: small_file_name
+            type: VARCHAR(255)
+        - column:
+            name: small_local_uri
+            type: BYTEA
+        - column:
+            name: small_url
+            type: VARCHAR(255)
+        - column:
+            name: url
+            type: VARCHAR(255)
+        tableName: image

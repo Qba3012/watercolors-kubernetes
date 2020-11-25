@@ -1,0 +1,102 @@
+databaseChangeLog:
+- changeSet:
+    id: 1605445189472-1
+    author: Jakub (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: imagePK
+            name: id
+            type: BIGINT
+        - column:
+            name: local_uri
+            type: BYTEA
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: url
+            type: VARCHAR(255)
+        tableName: image
+- changeSet:
+    id: 1605445189472-2
+    author: Jakub (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: subscriberPK
+            name: id
+            type: BIGINT
+        - column:
+            name: create_date
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: email
+            type: VARCHAR(255)
+        tableName: subscriber
+- changeSet:
+    id: 1605445189472-3
+    author: Jakub (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: table_dataPK
+            name: id
+            type: BIGINT
+        - column:
+            name: tag
+            type: VARCHAR(255)
+        - column:
+            name: template_id
+            type: BIGINT
+        tableName: table_data
+- changeSet:
+    id: 1605445189472-4
+    author: Jakub (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: templatePK
+            name: id
+            type: BIGINT
+        - column:
+            name: html
+            type: VARCHAR(10485760)
+        - column:
+            name: name
+            type: VARCHAR(255)
+        tableName: template
+- changeSet:
+    id: 1605445189472-5
+    author: Jakub (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: template_id
+        baseTableName: table_data
+        constraintName: FKslhqdgg4ako4fjvlghal4h31e
+        deferrable: false
+        initiallyDeferred: false
+        referencedColumnNames: id
+        referencedTableName: template
+        validate: true
+
